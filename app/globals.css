@@ -1,26 +1,266 @@
 @import "tailwindcss";
 
+/* ----------------------------------------------------------------------------
+   Bel-la Monde Riverside — design tokens
+   "The wilderness is the luxury." Deep forest green · ivory · brass.
+   Tailwind v4 @theme: these custom properties generate utilities
+   (e.g. --color-forest-900 -> bg-forest-900, --ease-entrance -> ease-entrance).
+---------------------------------------------------------------------------- */
+@theme {
+  /* Forest greens — the jungle. Primary dark surfaces. */
+  --color-forest-950: #0a140f;
+  --color-forest-900: #102018;
+  --color-forest-800: #173026;
+  --color-forest-700: #214234;
+  --color-forest-600: #2d5743;
+  --color-forest-500: #3d7156;
+  --color-forest-400: #5f9175;
+  --color-forest-300: #8fb39e;
+  --color-forest-200: #c0d3c7;
+  --color-forest-100: #e7efe9;
+  --color-forest-50: #f1f6f2;
+
+  /* Ivory — river mist / light surfaces. */
+  --color-ivory: #f3eee2;
+  --color-ivory-soft: #f9f5ec;
+  --color-ivory-dim: #e7dfce;
+
+  /* Brass — the single accent. "Book Direct" lives here. */
+  --color-brass-300: #dcc295;
+  --color-brass-400: #c9a76e;
+  --color-brass: #b08d57;
+  --color-brass-600: #8f6f3f;
+
+  /* Ink — warm near-black for text on ivory. */
+  --color-ink: #1c2620;
+  --color-ink-muted: #5b675f;
+
+  /* Semantic aliases */
+  --color-background: var(--color-ivory);
+  --color-foreground: var(--color-ink);
+  --color-accent: var(--color-brass);
+
+  /* Type families (variables injected by next/font on <html>). */
+  --font-display: var(--font-cormorant), "Cormorant Garamond", Georgia, serif;
+  --font-sans: var(--font-hanken), ui-sans-serif, system-ui, sans-serif;
+
+  /* Motion — the luxury curves (see §4.1). */
+  --ease-entrance: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-reveal: cubic-bezier(0.83, 0, 0.17, 1);
+
+  /* Soft layered shadows. */
+  --shadow-soft:
+    0 1px 2px rgba(16, 32, 24, 0.04), 0 8px 24px rgba(16, 32, 24, 0.06),
+    0 24px 56px rgba(16, 32, 24, 0.07);
+  --shadow-panel:
+    0 2px 8px rgba(10, 20, 15, 0.1), 0 20px 60px rgba(10, 20, 15, 0.22);
+
+  /* Radii. */
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 14px;
+
+  /* Fluid display sizes via clamp(). */
+  --text-hero: clamp(2.75rem, 7vw, 6.5rem);
+  --text-display: clamp(2.25rem, 5vw, 4.25rem);
+  --text-title: clamp(1.75rem, 3vw, 2.75rem);
+}
+
+/* ----------------------------------------------------------------------------
+   Base
+---------------------------------------------------------------------------- */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: light;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+* {
+  -webkit-tap-highlight-color: transparent;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  /* Lenis drives smooth scroll; keep native behaviour to avoid conflicts. */
+  scroll-behavior: auto;
+  /* Dark canvas so navigation gaps / reveals never flash light (every hero is dark). */
+  background-color: var(--color-forest-950);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-forest-950);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+
+::selection {
+  background-color: var(--color-brass);
+  color: var(--color-ivory-soft);
+}
+
+/* Focus visibility (a11y, §6). */
+:focus-visible {
+  outline: 2px solid var(--color-brass);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* Small tracked label used above section headings. */
+.eyebrow {
+  font-size: 0.7rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+}
+
+/* ----------------------------------------------------------------------------
+   Grain overlay — analog warmth (~4%). Fixed, never blocks interaction.
+---------------------------------------------------------------------------- */
+.grain-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  pointer-events: none;
+  opacity: 0.045;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+}
+
+/* ----------------------------------------------------------------------------
+   Preloader — logo reveal on open (§4.5, peak–end). CSS + timers so it always
+   dismisses (no rAF dependency); a 4s safety fade fails it open without JS.
+---------------------------------------------------------------------------- */
+.preloader {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.7rem;
+  background-color: var(--color-forest-950);
+  transition:
+    transform 0.9s cubic-bezier(0.83, 0, 0.17, 1),
+    opacity 0.9s ease;
+  will-change: transform;
+  animation: pl-safety 0.6s ease 4s forwards;
+}
+.preloader[data-state="out"] {
+  transform: translateY(-100%);
+}
+.preloader__logo {
+  width: min(58vw, 300px);
+  height: auto;
+  opacity: 0;
+  animation: pl-logo 1s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards;
+}
+.preloader__line {
+  position: relative;
+  width: min(36vw, 176px);
+  height: 1px;
+  overflow: hidden;
+  background-color: rgba(176, 141, 87, 0.18);
+}
+.preloader__line::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: var(--color-brass);
+  transform: scaleX(0);
+  transform-origin: left center;
+  animation: pl-line 1.4s cubic-bezier(0.83, 0, 0.17, 1) 0.35s forwards;
+}
+@keyframes pl-logo {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.96);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+  }
+}
+@keyframes pl-line {
+  to {
+    transform: scaleX(1);
+  }
+}
+@keyframes pl-safety {
+  to {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .preloader__logo {
+    animation-duration: 0.45s;
+    filter: none;
+    transform: none;
+  }
+  .preloader__line::after {
+    animation: none;
+    transform: scaleX(1);
+  }
+}
+
+/* ----------------------------------------------------------------------------
+   Per-navigation page reveal (app/template.tsx) — blur-to-focus rise, the same
+   language as the preloader. Page content only; nav/footer stay anchored.
+---------------------------------------------------------------------------- */
+.route-enter {
+  animation: route-in 0.65s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes route-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.994);
+    filter: blur(5px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .route-enter {
+    animation: none;
+  }
+}
+
+/* ----------------------------------------------------------------------------
+   react-day-picker — brand overrides (booking calendar)
+---------------------------------------------------------------------------- */
+.cal-skin .rdp-root {
+  --rdp-accent-color: var(--color-forest-700);
+  --rdp-accent-background-color: var(--color-forest-100);
+  --rdp-today-color: var(--color-brass-600);
+  --rdp-font-family: var(--font-sans);
+  --rdp-day-width: 2.4rem;
+  --rdp-day-height: 2.4rem;
+  --rdp-day_button-width: 2.4rem;
+  --rdp-day_button-height: 2.4rem;
+  --rdp-selected-border: 2px solid var(--color-forest-700);
+  margin: 0;
+}
+
+/* ----------------------------------------------------------------------------
+   Reduced motion — gut non-essential animation (§4.8, §6).
+---------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }
