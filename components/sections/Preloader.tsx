@@ -20,6 +20,14 @@ export function Preloader() {
     const t2 = setTimeout(() => {
       setState("done");
       document.documentElement.style.overflow = "";
+      // The page is scrollable again — nudge scroll-linked components (the home
+      // hero's Framer useScroll, and Lenis) to re-measure. Without this, on first
+      // load they keep the metrics taken while scroll was locked and the hero
+      // won't track scroll. Client-side navigation has no preloader, so it works
+      // there already.
+      requestAnimationFrame(() =>
+        requestAnimationFrame(() => window.dispatchEvent(new Event("resize"))),
+      );
     }, doneAt);
 
     return () => {
