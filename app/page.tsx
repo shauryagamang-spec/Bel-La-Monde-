@@ -11,7 +11,7 @@ export default function HomePage() {
     <>
       {/* Drone film: add /media/hero.mp4 (+ /media/hero-poster.jpg) then pass
           videoSrc="/media/hero.mp4" posterSrc="/media/hero-poster.jpg" below. */}
-      <ScrollExpandHero />
+      <ScrollExpandHero videoSrc="/media/BellaMond.mp4" />
       <BookingInvite />
       <ExperienceTiles />
       <Activities />
