@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { Reveal } from "@/components/primitives/Reveal";
 import { PlaceholderFrame } from "@/components/media/PlaceholderFrame";
+import { SmartImage } from "@/components/media/SmartImage";
 import { BookButton } from "@/components/booking/BookButton";
 import type { Room } from "@/content/rooms";
 import { cn } from "@/lib/utils";
@@ -27,7 +28,16 @@ export function RoomCard({
           aria-label={`View ${room.name}`}
         >
           <div className="transition-transform duration-[1200ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.04]">
-            <PlaceholderFrame ratio={featured ? "16/11" : room.ratio} bare />
+            {room.image ? (
+              <SmartImage
+                src={room.image}
+                alt={room.name}
+                ratio={featured ? "16/11" : room.ratio}
+                sizes="(min-width: 768px) 50vw, 100vw"
+              />
+            ) : (
+              <PlaceholderFrame ratio={featured ? "16/11" : room.ratio} bare />
+            )}
           </div>
           {room.anchor && (
             <span className="absolute left-4 top-4 rounded-full bg-brass px-3 py-1 text-[0.58rem] font-semibold uppercase tracking-[0.16em] text-forest-950">

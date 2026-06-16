@@ -1,5 +1,6 @@
 import { ScrollExpandHero } from "@/components/sections/ScrollExpandHero";
 import { BookingInvite } from "@/components/sections/BookingInvite";
+import { RoomsCarousel } from "@/components/sections/RoomsCarousel";
 import { ExperienceTiles } from "@/components/sections/ExperienceTiles";
 import { Activities } from "@/components/sections/Activities";
 import { DayOnKosi } from "@/components/sections/DayOnKosi";
@@ -13,6 +14,7 @@ export default function HomePage() {
           videoSrc="/media/hero.mp4" posterSrc="/media/hero-poster.jpg" below. */}
       <ScrollExpandHero videoSrc="/media/BellaMond.mp4" />
       <BookingInvite />
+      <RoomsCarousel />
       <ExperienceTiles />
       <Activities />
       <DayOnKosi />

@@ -237,6 +237,15 @@ body {
   }
 }
 
+/* Hide scrollbar on the rooms slider (still scrollable / swipeable). */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 /* ----------------------------------------------------------------------------
    react-day-picker — brand overrides (booking calendar)
 ---------------------------------------------------------------------------- */

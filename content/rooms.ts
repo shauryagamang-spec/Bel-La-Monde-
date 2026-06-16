@@ -1,6 +1,6 @@
-// Room lineup — real names from bellamonderiverside.com. Rates/occupancy/size are
-// deliberately omitted (no fabrication); the UI shows "Rates on request" until the
-// client confirms. Ordered premium-first so the Tiger Den Suite anchors the set.
+// Room lineup — real names + photos from bellamonderiverside.com. Rates/occupancy
+// are omitted (no fabrication); the UI shows "Rates on request" until confirmed.
+// Ordered premium-first so the Tiger Den Suite anchors the set.
 export type Room = {
   slug: string;
   name: string;
@@ -8,10 +8,12 @@ export type Room = {
   teaser: string; // card one-liner
   description: string; // detail-page intro
   features: string[];
+  amenities: string[]; // short labels for the carousel icon row
+  image?: string; // /media/rooms/<slug>.webp
   privatePool?: boolean;
   anchor?: boolean; // lead / price anchor
   ratio?: string;
-  gallery?: number; // number of placeholder gallery slots
+  gallery?: number; // placeholder gallery slots on the detail page
 };
 
 export const rooms: Room[] = [
@@ -31,6 +33,8 @@ export const rooms: Room[] = [
       "Wi-Fi",
       "Room service",
     ],
+    amenities: ["Couple", "Private pool", "Wi-Fi"],
+    image: "/media/rooms/tiger-den-suites.webp",
     privatePool: true,
     anchor: true,
     ratio: "4/5",
@@ -50,6 +54,8 @@ export const rooms: Room[] = [
       "Wi-Fi",
       "Room service",
     ],
+    amenities: ["Couple", "River view", "Wi-Fi"],
+    image: "/media/rooms/river-front-room.webp",
     ratio: "4/5",
     gallery: 4,
   },
@@ -68,6 +74,8 @@ export const rooms: Room[] = [
       "Wi-Fi",
       "Room service",
     ],
+    amenities: ["Couple", "Mountain view", "Wi-Fi"],
+    image: "/media/rooms/cottage-room.webp",
     ratio: "4/5",
     gallery: 4,
   },
@@ -85,6 +93,8 @@ export const rooms: Room[] = [
       "Wi-Fi",
       "Room service",
     ],
+    amenities: ["Couple", "Garden view", "Wi-Fi"],
+    image: "/media/rooms/deluxe-room.webp",
     ratio: "4/5",
     gallery: 3,
   },
@@ -97,6 +107,8 @@ export const rooms: Room[] = [
     description:
       "Relaxed rooms tucked under the old mango trees — the simplest, most unfussy way to wake up on the river.",
     features: ["Garden setting", "Air-conditioning", "Wi-Fi", "Room service"],
+    amenities: ["Couple", "Wi-Fi", "Mini bar"],
+    image: "/media/rooms/mango-tree-rooms.webp",
     ratio: "4/5",
     gallery: 3,
   },
