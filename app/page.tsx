@@ -4,7 +4,7 @@ import { RoomsCarousel } from "@/components/sections/RoomsCarousel";
 import { ExperienceTiles } from "@/components/sections/ExperienceTiles";
 import { Activities } from "@/components/sections/Activities";
 import { DayOnKosi } from "@/components/sections/DayOnKosi";
-import { SocialProof } from "@/components/sections/SocialProof";
+import { Testimonials } from "@/components/sections/Testimonials";
 import { OfferStrip } from "@/components/sections/OfferStrip";
 
 export default function HomePage() {
@@ -18,7 +18,7 @@ export default function HomePage() {
       <ExperienceTiles />
       <Activities />
       <DayOnKosi />
-      <SocialProof />
+      <Testimonials />
       <OfferStrip />
     </>
   );
