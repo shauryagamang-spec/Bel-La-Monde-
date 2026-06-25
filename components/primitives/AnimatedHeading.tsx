@@ -1,6 +1,6 @@
 "use client";
-import { Fragment } from "react";
-import { motion } from "motion/react";
+import { Fragment, useEffect, useRef, useState } from "react";
+import { motion, useInView } from "motion/react";
 import { EASE_REVEAL } from "@/lib/motion";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 
@@ -8,13 +8,14 @@ type Tag = "h1" | "h2" | "h3" | "p";
 
 /**
  * Word-by-word mask reveal (§4.3) — each word rises out of an overflow-hidden
- * clip, the single most "designed"-feeling effect. Each word self-animates with
- * a staggered delay (robust — no parent-orchestration dependency). Accessible
- * name is preserved via aria-label; visual words are aria-hidden.
+ * clip, the single most "designed"-feeling effect.
  *
- * `trigger="mount"` plays on load (above-the-fold hero headings);
- * `trigger="inView"` (default) plays when scrolled into view. Reduced-motion
- * users get plain, fully legible text.
+ * Reveals when scrolled into view (`trigger="inView"`, default) or on mount
+ * (`trigger="mount"`, above-the-fold heroes). Crucially it carries a mount-time
+ * SAFETY NET: if the IntersectionObserver never fires — which can happen below a
+ * tall scroll-driven hero, with Lenis, or on a restored scroll position — the
+ * words still reveal after a short delay, so a heading can NEVER stay blank.
+ * Reduced-motion users get plain, fully legible text.
  */
 export function AnimatedHeading({
   text,
@@ -34,38 +35,58 @@ export function AnimatedHeading({
   once?: boolean;
 }) {
   const reduced = usePrefersReducedMotion();
+  const ref = useRef<HTMLElement | null>(null);
+  const inView = useInView(ref, { once, amount: 0.2 });
+  const [safety, setSafety] = useState(false);
+
+  // Guarantee the reveal even if the observer never fires.
+  useEffect(() => {
+    const t = setTimeout(() => setSafety(true), 1400);
+    return () => clearTimeout(t);
+  }, []);
+
   const Tag = as;
 
   if (reduced) {
-    return <Tag className={className}>{text}</Tag>;
+    return (
+      <Tag
+        ref={(n) => {
+          ref.current = n;
+        }}
+        className={className}
+      >
+        {text}
+      </Tag>
+    );
   }
 
+  const show = trigger === "mount" || inView || safety;
   const words = text.split(" ");
-  const motionFor = (i: number) => {
-    const transition = {
-      duration: 0.9,
-      ease: EASE_REVEAL,
-      delay: delay + i * stagger,
-    };
-    return trigger === "mount"
-      ? { initial: { y: "110%" }, animate: { y: 0 }, transition }
-      : {
-          initial: { y: "110%" },
-          whileInView: { y: 0 },
-          viewport: { once, amount: 0.5 },
-          transition,
-        };
-  };
 
   return (
-    <Tag className={className} aria-label={text}>
+    <Tag
+      ref={(n) => {
+        ref.current = n;
+      }}
+      className={className}
+      aria-label={text}
+    >
       {words.map((word, i) => (
         <Fragment key={i}>
           <span
             aria-hidden="true"
             className="inline-block overflow-hidden pb-[0.15em] align-bottom -mb-[0.15em]"
           >
-            <motion.span className="inline-block" {...motionFor(i)}>
+            <motion.span
+              className="inline-block"
+              initial={{ y: "110%" }}
+              animate={{ y: show ? "0%" : "110%" }}
+              transition={{
+                duration: 0.9,
+                ease: EASE_REVEAL,
+                delay: show ? delay + i * stagger : 0,
+              }}
+            >
               {word}
             </motion.span>
           </span>

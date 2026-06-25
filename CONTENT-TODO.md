@@ -31,6 +31,8 @@ Highlighted: Jim Corbett Safari, River Rafting, Zipline, Cycling. Copy is fact-s
 ## Imagery / video
 - [ ] **Hero video** — drone-over-Kosi at golden hour → `public/media/hero.mp4` (+ `hero-poster.jpg`). Placeholder is a CSS gradient.
 - [ ] **Activity photos** — drop paths into each item's `image` field in `content/activities.ts` (slots are sized; zero layout shift on swap).
+- [ ] **Wildlife reveal (homepage `WildlifeReveal`)** — currently using **Pexels free-licence stock** (tiger #145939, elephant #5373904) as interim, wired in `app/page.tsx`. Replace with the resort's OWN tiger/elephant shoot (or other licensed photos): drop files in `public/media/wildlife/` and point the `before.src` / `after.src` at them. **Do NOT use Pinterest/un-licensed images** (copyright).
+- [ ] **Book Direct band parallax background (`BookingInvite`)** — using **Pexels free-licence stock** (misty forest + river bend, #34676607) behind a dark overlay. Swap for a real Kosi-river / property photo by changing the `ParallaxImage src` in `components/sections/BookingInvite.tsx`.
 - [ ] All other photography is placeholder pending the shoot (image manifest added in Phase 7).
 
 ## Pending later phases

@@ -1,9 +1,7 @@
-"use client";
-import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import {
-  ArrowLeft,
   ArrowRight,
+  ArrowUpRight,
   Mountain,
   Users,
   Waves,
@@ -13,9 +11,10 @@ import {
 import { Section } from "@/components/primitives/Section";
 import { Container } from "@/components/primitives/Container";
 import { SectionHeading } from "@/components/primitives/SectionHeading";
+import { Reveal } from "@/components/primitives/Reveal";
 import { SmartImage } from "@/components/media/SmartImage";
 import { PlaceholderFrame } from "@/components/media/PlaceholderFrame";
-import { rooms } from "@/content/rooms";
+import { rooms, type Room } from "@/content/rooms";
 
 function amenityIcon(label: string) {
   const l = label.toLowerCase();
@@ -27,168 +26,135 @@ function amenityIcon(label: string) {
 }
 
 /**
- * Rooms slider — drag (mouse) + native swipe (touch) + scroll-snap, with arrow
- * controls that disable at the ends. Cards are links to each room detail; the
- * track is full-bleed so adjacent cards peek. Lenis-friendly (native scroll).
+ * Rooms marquee — immersive cards drift sideways and loop forever (list rendered
+ * twice; the CSS animates exactly one copy-width). Each card overlays its name,
+ * teaser and amenities on the photo, editorial-style. It keeps drifting under the
+ * cursor; only keyboard focus pauses it. Reduced motion → static row.
  */
 export function RoomsCarousel() {
-  const trackRef = useRef<HTMLDivElement>(null);
-  const drag = useRef({ active: false, startX: 0, startLeft: 0, moved: false });
-  const [edges, setEdges] = useState({ start: true, end: false });
-
-  const updateEdges = useCallback(() => {
-    const el = trackRef.current;
-    if (!el) return;
-    setEdges({
-      start: el.scrollLeft <= 2,
-      end: el.scrollLeft >= el.scrollWidth - el.clientWidth - 2,
-    });
-  }, []);
-
-  useEffect(() => {
-    updateEdges();
-    window.addEventListener("resize", updateEdges);
-    return () => window.removeEventListener("resize", updateEdges);
-  }, [updateEdges]);
-
-  const step = (dir: number) => {
-    const el = trackRef.current;
-    if (!el) return;
-    const card = el.querySelector<HTMLElement>("[data-card]");
-    const w = card ? card.offsetWidth + 24 : el.clientWidth * 0.8;
-    el.scrollBy({ left: dir * w, behavior: "smooth" });
-  };
-
-  const onPointerDown = (e: React.PointerEvent) => {
-    if (e.pointerType !== "mouse") return; // let touch use native scroll
-    const el = trackRef.current;
-    if (!el) return;
-    drag.current = {
-      active: true,
-      startX: e.clientX,
-      startLeft: el.scrollLeft,
-      moved: false,
-    };
-  };
-  const onPointerMove = (e: React.PointerEvent) => {
-    const el = trackRef.current;
-    if (!el || !drag.current.active) return;
-    const dx = e.clientX - drag.current.startX;
-    if (Math.abs(dx) > 4) drag.current.moved = true;
-    el.scrollLeft = drag.current.startLeft - dx;
-  };
-  const endDrag = () => {
-    drag.current.active = false;
-  };
-  // Swallow the click if the pointer was dragged (don't navigate on a drag).
-  const onClickCapture = (e: React.MouseEvent) => {
-    if (drag.current.moved) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-  };
-
   return (
     <Section className="bg-ivory">
       <Container>
-        <div className="flex items-end justify-between gap-6">
-          <SectionHeading
-            eyebrow="Stays"
-            title="A room for every kind of quiet."
-            intro="Five rooms on the bank — from the easy Mango Tree rooms to the Tiger Den suites with a private pool."
-            className="max-w-2xl"
-          />
-          <div className="hidden shrink-0 items-center gap-3 md:flex">
-            <CarouselButton dir={-1} onClick={() => step(-1)} disabled={edges.start} label="Previous rooms" />
-            <CarouselButton dir={1} onClick={() => step(1)} disabled={edges.end} label="Next rooms" />
-          </div>
-        </div>
+        <SectionHeading
+          eyebrow="Stays"
+          title="A room for every kind of quiet."
+          intro="Five rooms on the bank — from the easy Mango Tree rooms to the Tiger Den suites with a private pool."
+          className="max-w-2xl"
+        />
+        <Reveal delay={0.12}>
+          <Link
+            href="/stays"
+            className="group mt-7 inline-flex items-center gap-2 text-sm font-medium uppercase tracking-[0.14em] text-brass-600 transition-colors hover:text-brass"
+          >
+            Explore all five rooms
+            <ArrowRight className="size-4 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-x-1" />
+          </Link>
+        </Reveal>
       </Container>
 
       <div
-        ref={trackRef}
-        onScroll={updateEdges}
-        onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={endDrag}
-        onPointerLeave={endDrag}
-        onClickCapture={onClickCapture}
-        className="no-scrollbar mt-12 flex cursor-grab snap-x snap-mandatory gap-6 overflow-x-auto px-6 pb-3 select-none [scroll-padding-inline:1.5rem] active:cursor-grabbing md:px-10 md:[scroll-padding-inline:2.5rem]"
+        role="region"
+        aria-label="Our rooms"
+        className="mt-12 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_4%,black_96%,transparent)] md:mt-16"
       >
-        {rooms.map((room) => (
-          <Link
-            key={room.slug}
-            href={`/stays/${room.slug}`}
-            data-card
-            className="group block w-[78vw] shrink-0 snap-start sm:w-[20rem] lg:w-[22rem]"
-            draggable={false}
-          >
-            <div className="relative overflow-hidden rounded-md">
-              {room.image ? (
-                <SmartImage
-                  src={room.image}
-                  alt={room.name}
-                  ratio="4/5"
-                  hover
-                  sizes="(min-width: 1024px) 22rem, (min-width: 640px) 20rem, 78vw"
-                />
-              ) : (
-                <PlaceholderFrame ratio="4/5" bare />
-              )}
-              <div
-                aria-hidden
-                className="absolute inset-0 bg-gradient-to-t from-forest-950/45 via-transparent to-transparent"
-              />
-              {room.anchor && (
-                <span className="absolute left-4 top-4 rounded-full bg-brass px-3 py-1 text-[0.56rem] font-semibold uppercase tracking-[0.16em] text-forest-950">
-                  Signature
-                </span>
-              )}
-            </div>
-            <div className="mt-4">
-              <p className="eyebrow text-brass-600">{room.view}</p>
-              <h3 className="mt-2 font-display text-2xl leading-tight tracking-[-0.01em] text-forest-900">
-                {room.name}
-              </h3>
-              <ul className="mt-3 flex flex-wrap gap-x-4 gap-y-1.5 text-sm text-ink-muted">
-                {room.amenities.map((a) => {
-                  const Icon = amenityIcon(a);
-                  return (
-                    <li key={a} className="flex items-center gap-1.5">
-                      <Icon className="size-4 text-brass-600" /> {a}
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-          </Link>
-        ))}
-        <div aria-hidden className="w-1 shrink-0" />
+        <ul className="rooms-marquee m-0 list-none p-0">
+          {rooms.map((room, i) => (
+            <RoomCardItem key={room.slug} room={room} index={i} />
+          ))}
+          {/* Duplicate copy — hidden from AT and keyboard; powers the seamless loop. */}
+          {rooms.map((room, i) => (
+            <RoomCardItem key={`dup-${room.slug}`} room={room} index={i} duplicate />
+          ))}
+        </ul>
       </div>
     </Section>
   );
 }
 
-function CarouselButton({
-  dir,
-  onClick,
-  disabled,
-  label,
+function RoomCardItem({
+  room,
+  index,
+  duplicate = false,
 }: {
-  dir: number;
-  onClick: () => void;
-  disabled: boolean;
-  label: string;
+  room: Room;
+  index: number;
+  duplicate?: boolean;
 }) {
+  const ratio = room.ratio ?? "4/5";
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={disabled}
-      aria-label={label}
-      className="grid size-12 place-items-center rounded-full border border-ink/20 text-forest-800 transition-colors hover:border-brass hover:bg-brass hover:text-forest-950 disabled:opacity-25 disabled:hover:border-ink/20 disabled:hover:bg-transparent disabled:hover:text-forest-800"
-    >
-      {dir < 0 ? <ArrowLeft className="size-5" /> : <ArrowRight className="size-5" />}
-    </button>
+    <li className="mr-6 shrink-0 lg:mr-8" aria-hidden={duplicate || undefined}>
+      <Link
+        href={`/stays/${room.slug}`}
+        tabIndex={duplicate ? -1 : undefined}
+        draggable={false}
+        className="group relative block w-[20rem] cursor-pointer overflow-hidden rounded-2xl ring-1 ring-ink/10 transition-shadow duration-300 hover:shadow-panel sm:w-[22rem] lg:w-[25rem]"
+      >
+        {room.image ? (
+          <SmartImage
+            src={room.image}
+            alt={room.name}
+            ratio={ratio}
+            sizes="(min-width: 1024px) 25rem, (min-width: 640px) 22rem, 20rem"
+          />
+        ) : (
+          <PlaceholderFrame ratio={ratio} bare />
+        )}
+
+        {/* Scrims for legibility — strong at the foot, soft at the head. */}
+        <div
+          aria-hidden
+          className="absolute inset-0 bg-gradient-to-t from-forest-950 via-forest-950/35 to-transparent"
+        />
+        <div
+          aria-hidden
+          className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-forest-950/55 to-transparent"
+        />
+
+        {/* Badge + editorial index */}
+        <div className="absolute inset-x-0 top-0 flex items-start justify-between p-5">
+          {room.anchor ? (
+            <span className="rounded-full bg-brass px-3 py-1 text-[0.58rem] font-semibold uppercase tracking-[0.18em] text-forest-950">
+              Signature
+            </span>
+          ) : (
+            <span />
+          )}
+          <span
+            aria-hidden
+            className="font-display text-3xl leading-none text-ivory/35"
+          >
+            {String(index + 1).padStart(2, "0")}
+          </span>
+        </div>
+
+        {/* Overlaid content */}
+        <div className="absolute inset-x-0 bottom-0 p-6 lg:p-7">
+          <p className="eyebrow text-brass-300">{room.view}</p>
+          <h3 className="mt-2 font-display text-3xl leading-[1.05] tracking-[-0.01em] text-ivory lg:text-4xl">
+            {room.name}
+          </h3>
+          <p className="mt-2.5 line-clamp-2 max-w-[34ch] text-sm leading-relaxed text-ivory/75">
+            {room.teaser}
+          </p>
+
+          <div className="mt-5 flex items-center justify-between gap-4 border-t border-ivory/15 pt-4">
+            <ul className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm text-ivory/85">
+              {room.amenities.slice(0, 3).map((a) => {
+                const Icon = amenityIcon(a);
+                return (
+                  <li key={a} className="flex items-center gap-1.5">
+                    <Icon className="size-4 text-brass-300" /> {a}
+                  </li>
+                );
+              })}
+            </ul>
+            <span className="flex shrink-0 items-center gap-1 text-xs font-medium uppercase tracking-[0.14em] text-brass-300">
+              View
+              <ArrowUpRight className="size-4 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+            </span>
+          </div>
+        </div>
+      </Link>
+    </li>
   );
 }

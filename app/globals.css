@@ -284,6 +284,60 @@ body {
 }
 
 /* ----------------------------------------------------------------------------
+   BookingInvite — drifting river currents + a warm concierge glow behind the
+   panel. The global reduced-motion rule below neutralises both.
+---------------------------------------------------------------------------- */
+.river-currents {
+  animation: river-drift 26s ease-in-out infinite;
+}
+@keyframes river-drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(-2.5%, 0.8%, 0);
+  }
+}
+.concierge-glow {
+  animation: concierge-pulse 9s ease-in-out infinite;
+}
+@keyframes concierge-pulse {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 0.85;
+  }
+}
+
+/* ----------------------------------------------------------------------------
+   Rooms marquee — cards drift rightward and loop forever. The list is rendered
+   twice and every card carries its own right margin, so translateX(-50%) is
+   exactly one copy → a seamless loop. Hover/focus pauses; reduced motion (below)
+   freezes it. Direction flips by swapping the from/to values.
+---------------------------------------------------------------------------- */
+.rooms-marquee {
+  display: flex;
+  width: max-content;
+  animation: rooms-drift var(--rooms-duration, 52s) linear infinite;
+}
+/* Keeps drifting under the cursor; only keyboard focus pauses it (so tab-through
+   is usable). */
+.rooms-marquee:focus-within {
+  animation-play-state: paused;
+}
+@keyframes rooms-drift {
+  from {
+    transform: translateX(-50%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+/* ----------------------------------------------------------------------------
    react-day-picker — brand overrides (booking calendar)
 ---------------------------------------------------------------------------- */
 .cal-skin .rdp-root {
