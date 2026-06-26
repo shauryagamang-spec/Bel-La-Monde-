@@ -30,9 +30,11 @@ Highlighted: Jim Corbett Safari, River Rafting, Zipline, Cycling. Copy is fact-s
 
 ## Imagery / video
 - [ ] **Hero video** — drone-over-Kosi at golden hour → `public/media/hero.mp4` (+ `hero-poster.jpg`). Placeholder is a CSS gradient.
-- [ ] **Activity photos** — drop paths into each item's `image` field in `content/activities.ts` (slots are sized; zero layout shift on swap).
+- [ ] **Activity photos** — drop paths into each item's `image` field in `content/activities.ts` (slots are sized; zero layout shift on swap). The homepage **HotelActivities** card currently uses Pexels free-licence stock (safari/deer #247385, rafting #31758766, zipline #1090551, cycling #12328608); replace with the resort's own/licensed photos in `components/sections/HotelActivities.tsx`.
 - [ ] **Wildlife reveal (homepage `WildlifeReveal`)** — currently using **Pexels free-licence stock** (tiger #145939, elephant #5373904) as interim, wired in `app/page.tsx`. Replace with the resort's OWN tiger/elephant shoot (or other licensed photos): drop files in `public/media/wildlife/` and point the `before.src` / `after.src` at them. **Do NOT use Pinterest/un-licensed images** (copyright).
 - [ ] **Book Direct band parallax background (`BookingInvite`)** — using **Pexels free-licence stock** (misty forest + river bend, #34676607) behind a dark overlay. Swap for a real Kosi-river / property photo by changing the `ParallaxImage src` in `components/sections/BookingInvite.tsx`.
+- [ ] **Rooms marquee parallax backdrop (`RoomsCarousel`)** — Pexels free-licence stock (golden-hour river + forest, #1144176) drifting behind the room cards. Swap for a real property/river photo via the `ParallaxImage src` in `components/sections/RoomsCarousel.tsx`.
+- [ ] **Hero ambient backdrop (`ScrollExpandHero`)** — Pexels free-licence stock (dark foggy forest, #5868172) drifting behind the expanding video card, heavily darkened. Swap for a real Kosi/jungle photo via the `<img src>` in `components/sections/ScrollExpandHero.tsx`.
 - [ ] All other photography is placeholder pending the shoot (image manifest added in Phase 7).
 
 ## Pending later phases

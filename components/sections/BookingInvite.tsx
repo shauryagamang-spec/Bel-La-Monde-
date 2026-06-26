@@ -24,7 +24,7 @@ export function BookingInvite() {
       {/* Atmosphere — a parallax forest-river photo, darkened for legibility,
           with a warm concierge glow behind the panel. */}
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
-        <ParallaxImage src="https://images.pexels.com/photos/34676607/pexels-photo-34676607.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=1920&h=1280" />
+        <ParallaxImage src="https://images.pexels.com/photos/34676607/pexels-photo-34676607.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=1600&h=1066" />
         {/* Darken — heavier on the text (left) side, plus a top/bottom vignette. */}
         <div className="absolute inset-0 bg-gradient-to-r from-forest-950/95 via-forest-950/82 to-forest-950/68" />
         <div className="absolute inset-0 bg-gradient-to-b from-forest-950/55 via-transparent to-forest-950/85" />

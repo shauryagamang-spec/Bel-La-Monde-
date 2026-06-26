@@ -10,10 +10,11 @@ import {
 } from "lucide-react";
 import { Section } from "@/components/primitives/Section";
 import { Container } from "@/components/primitives/Container";
-import { SectionHeading } from "@/components/primitives/SectionHeading";
+import { AnimatedHeading } from "@/components/primitives/AnimatedHeading";
 import { Reveal } from "@/components/primitives/Reveal";
 import { SmartImage } from "@/components/media/SmartImage";
 import { PlaceholderFrame } from "@/components/media/PlaceholderFrame";
+import { ParallaxImage } from "@/components/media/ParallaxImage";
 import { rooms, type Room } from "@/content/rooms";
 
 function amenityIcon(label: string) {
@@ -35,37 +36,86 @@ export function RoomsCarousel() {
   return (
     <Section className="bg-ivory">
       <Container>
-        <SectionHeading
-          eyebrow="Stays"
-          title="A room for every kind of quiet."
-          intro="Five rooms on the bank — from the easy Mango Tree rooms to the Tiger Den suites with a private pool."
-          className="max-w-2xl"
-        />
-        <Reveal delay={0.12}>
-          <Link
-            href="/stays"
-            className="group mt-7 inline-flex items-center gap-2 text-sm font-medium uppercase tracking-[0.14em] text-brass-600 transition-colors hover:text-brass"
-          >
-            Explore all five rooms
-            <ArrowRight className="size-4 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-x-1" />
-          </Link>
-        </Reveal>
+        <div className="grid items-end gap-x-16 gap-y-9 border-b border-ink/10 pb-10 md:pb-12 lg:grid-cols-[1.55fr_1fr]">
+          {/* Headline column */}
+          <div>
+            <Reveal>
+              <div className="flex items-center gap-4">
+                <span aria-hidden className="h-px w-12 bg-brass" />
+                <span className="text-sm font-semibold uppercase tracking-[0.3em] text-brass-600 sm:text-base">
+                  Stays
+                </span>
+                <span className="font-display text-xl leading-none text-forest-700/45">
+                  / 05
+                </span>
+              </div>
+            </Reveal>
+            <AnimatedHeading
+              as="h2"
+              text="A room for every kind of quiet."
+              className="mt-7 font-display text-[clamp(2.75rem,6vw,5.25rem)] font-medium leading-[0.95] tracking-[-0.03em] text-forest-900"
+            />
+          </div>
+
+          {/* Supporting column */}
+          <div className="lg:pb-2">
+            <Reveal delay={0.1}>
+              <p className="max-w-md text-lg leading-relaxed text-ink-muted">
+                Five rooms on the bank — from the easy Mango Tree rooms to the
+                Tiger Den suites with a private pool.
+              </p>
+            </Reveal>
+            <Reveal delay={0.16}>
+              <Link
+                href="/stays"
+                className="group mt-7 inline-flex items-center gap-3 text-sm font-semibold uppercase tracking-[0.16em] text-brass-600 transition-colors hover:text-brass"
+              >
+                Explore all five rooms
+                <span
+                  aria-hidden
+                  className="grid size-9 place-items-center rounded-full border border-brass/40 text-brass-600 transition-colors duration-300 group-hover:border-brass group-hover:bg-brass group-hover:text-forest-950"
+                >
+                  <ArrowRight className="size-4 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-x-0.5" />
+                </span>
+              </Link>
+            </Reveal>
+          </div>
+        </div>
       </Container>
 
-      <div
-        role="region"
-        aria-label="Our rooms"
-        className="mt-12 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_4%,black_96%,transparent)] md:mt-16"
-      >
-        <ul className="rooms-marquee m-0 list-none p-0">
-          {rooms.map((room, i) => (
-            <RoomCardItem key={room.slug} room={room} index={i} />
-          ))}
-          {/* Duplicate copy — hidden from AT and keyboard; powers the seamless loop. */}
-          {rooms.map((room, i) => (
-            <RoomCardItem key={`dup-${room.slug}`} room={room} index={i} duplicate />
-          ))}
-        </ul>
+      <div className="relative mt-12 md:mt-16">
+        {/* Parallax backdrop — an aspirational golden-hour riverside scene drifts
+            behind the cards, darkened and blended into the ivory top and bottom. */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 overflow-hidden"
+        >
+          <ParallaxImage src="https://images.pexels.com/photos/1144176/pexels-photo-1144176.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=1600&h=1066" />
+          <div className="absolute inset-0 bg-forest-950/45" />
+          <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-ivory to-transparent" />
+          <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-ivory to-transparent" />
+        </div>
+
+        <div
+          role="region"
+          aria-label="Our rooms"
+          className="relative overflow-hidden py-12 [mask-image:linear-gradient(to_right,transparent,black_4%,black_96%,transparent)] md:py-16"
+        >
+          <ul className="rooms-marquee m-0 list-none p-0">
+            {rooms.map((room, i) => (
+              <RoomCardItem key={room.slug} room={room} index={i} />
+            ))}
+            {/* Duplicate copy — hidden from AT and keyboard; powers the seamless loop. */}
+            {rooms.map((room, i) => (
+              <RoomCardItem
+                key={`dup-${room.slug}`}
+                room={room}
+                index={i}
+                duplicate
+              />
+            ))}
+          </ul>
+        </div>
       </div>
     </Section>
   );

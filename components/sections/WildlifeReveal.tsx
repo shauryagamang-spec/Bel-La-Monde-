@@ -169,6 +169,8 @@ function Panel({
           src={side.src}
           alt={side.alt ?? side.name}
           draggable={false}
+          loading="lazy"
+          decoding="async"
           className="absolute inset-0 h-full w-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-forest-950/70 via-transparent to-transparent" />

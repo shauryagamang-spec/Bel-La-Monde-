@@ -322,6 +322,7 @@ body {
   display: flex;
   width: max-content;
   animation: rooms-drift var(--rooms-duration, 52s) linear infinite;
+  will-change: transform;
 }
 /* Keeps drifting under the cursor; only keyboard focus pauses it (so tab-through
    is usable). */

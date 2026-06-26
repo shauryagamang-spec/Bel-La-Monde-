@@ -1,10 +1,10 @@
 import { ScrollExpandHero } from "@/components/sections/ScrollExpandHero";
 import { BookingInvite } from "@/components/sections/BookingInvite";
+import { WildlifeReveal } from "@/components/sections/WildlifeReveal";
 import { RoomsCarousel } from "@/components/sections/RoomsCarousel";
 import { ExperienceTiles } from "@/components/sections/ExperienceTiles";
-import { WildlifeReveal } from "@/components/sections/WildlifeReveal";
-import { Activities } from "@/components/sections/Activities";
-import { DayOnKosi } from "@/components/sections/DayOnKosi";
+import { ActivitiesIntro } from "@/components/sections/ActivitiesIntro";
+import { HotelActivities } from "@/components/sections/HotelActivities";
 import { Testimonials } from "@/components/sections/Testimonials";
 import { OfferStrip } from "@/components/sections/OfferStrip";
 
@@ -15,8 +15,6 @@ export default function HomePage() {
           videoSrc="/media/hero.mp4" posterSrc="/media/hero-poster.jpg" below. */}
       <ScrollExpandHero videoSrc="/media/BellaMond.mp4" />
       <BookingInvite />
-      <RoomsCarousel />
-      <ExperienceTiles />
       {/* Stock photos (Pexels, free licence) standing in until the resort's own
           wildlife shoot — see CONTENT-TODO.md. */}
       <WildlifeReveal
@@ -33,8 +31,10 @@ export default function HomePage() {
           tag: "Asiatic · Corbett",
         }}
       />
-      <Activities />
-      <DayOnKosi />
+      <RoomsCarousel />
+      <ExperienceTiles />
+      <ActivitiesIntro />
+      <HotelActivities />
       <Testimonials />
       <OfferStrip />
     </>

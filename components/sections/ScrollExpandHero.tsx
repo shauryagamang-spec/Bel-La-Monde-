@@ -48,13 +48,24 @@ export function ScrollExpandHero({
       progress.set(dist > 0 ? clamp(-top / dist) : 0);
     };
     update();
-    window.addEventListener("scroll", update, { passive: true });
+    // Coalesce scroll events into one rAF read per frame — avoids a forced
+    // reflow on every scroll tick (Lenis fires a lot of them).
+    let ticking = false;
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        update();
+        ticking = false;
+      });
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", update);
     // Catch layout that settles after mount (preloader unlock, fonts, images).
     const t1 = setTimeout(update, 200);
     const t2 = setTimeout(update, 800);
     return () => {
-      window.removeEventListener("scroll", update);
+      window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", update);
       clearTimeout(t1);
       clearTimeout(t2);
@@ -70,6 +81,9 @@ export function ScrollExpandHero({
   const scrim = useTransform(progress, [0, 0.7], [0.5, 0.26]);
   const reveal = useTransform(progress, [0.62, 0.86], [0, 1]);
   const cue = useTransform(progress, [0, 0.12], [1, 0]);
+  // Ambient backdrop parallax — drifts the forest image in the margins behind
+  // the card. Driven by the hero's own progress (the section is pinned).
+  const bgY = useTransform(progress, [0, 1], ["-7%", "7%"]);
 
   const media = videoSrc ? (
     <video
@@ -111,6 +125,35 @@ export function ScrollExpandHero({
   return (
     <section ref={ref} className="relative h-[200vh] bg-forest-950">
       <div className="sticky top-0 flex h-[100svh] items-center justify-center overflow-hidden">
+        {/* Ambient parallax backdrop — fills the dark-green margins around the
+            card. Heavily darkened with a centre vignette so the wordmark and
+            video stay the focus; the card covers it as it expands. */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 overflow-hidden"
+        >
+          <motion.div
+            style={{ y: bgY }}
+            className="absolute -top-[15%] left-0 h-[130%] w-full will-change-transform"
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="https://images.pexels.com/photos/5868172/pexels-photo-5868172.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=1280&h=853"
+              alt=""
+              aria-hidden
+              decoding="async"
+              className="h-full w-full object-cover"
+            />
+          </motion.div>
+          <div className="absolute inset-0 bg-forest-950/[0.78]" />
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                "radial-gradient(58% 55% at 50% 50%, rgba(10,20,15,0.55), transparent 76%)",
+            }}
+          />
+        </div>
         {/* Expanding media card */}
         <motion.div
           style={{ scale, borderRadius: radius }}
